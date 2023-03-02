@@ -1,0 +1,313 @@
+<div class="mat-elevation-z0">
+  <div class="action">
+    <div class="action">
+      <button
+        type="button"
+        class="custom-btn me-2"
+        mat-raised-button
+        *ngIf="isSelected"
+        (click)="deleteRequests()"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          fill="currentColor"
+          class="bi bi-trash-fill me-2"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"
+          />
+        </svg>
+        Delete all marked
+      </button>
+      <form action="">
+        <input
+          type="text"
+          class="form-control custom-input"
+          placeholder="Search"
+          (keyup)="searchFilter($event)"
+        />
+      </form>
+    </div>
+    <button
+      mat-mini-fab
+      (click)="ngAfterViewInit()"
+      style="background: none; border-radius: 50%"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        fill="black"
+        class="bi bi-arrow-repeat"
+        viewBox="0 0 16 16"
+      >
+        <path
+          d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"
+        />
+        <path
+          fill-rule="evenodd"
+          d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"
+        />
+      </svg>
+    </button>
+  </div>
+  <table
+    mat-table
+    class="full-width-table"
+    matSort
+    aria-label="Elements"
+    id="excel-table"
+  >
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox
+          (change)="$event ? masterToggle() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+        >
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox
+          (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row.id) : null"
+          (change)="singleSelection()"
+          [checked]="selection.isSelected(row.id)"
+        >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+    <!-- Id Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Id</th>
+      <td mat-cell *matCellDef="let row">{{ row.idNumber }}</td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Requester Name</th>
+      <td mat-cell *matCellDef="let row" class="td">{{ row.requesterName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="file">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>File</th>
+      <td mat-cell *matCellDef="let row" class="td">{{ row.fileRequested }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="campus">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Campus</th>
+      <td mat-cell *matCellDef="let row" class="td">{{ row.campus }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+      <td mat-cell *matCellDef="let row" class="td">
+        {{ row.status }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+      <td mat-cell *matCellDef="let row" class="action-cell">
+        <div class="button-group">
+          <button
+            type="button"
+            class="action-btn edit-btn"
+            mat-mini-fab
+            [disabled]="row.status != 'pending'"
+            (click)="openRightSideBar(row)"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-check2-square"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5H3z"
+              />
+              <path
+                d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"
+              />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="action-btn delete-btn"
+            mat-mini-fab
+            (click)="selectRow(row)"
+            data-bs-toggle="modal"
+            data-bs-target="#remarks-modal"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-slash-circle"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"
+              />
+              <path
+                d="M11.354 4.646a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 .708.708l6-6a.5.5 0 0 0 0-.708z"
+              />
+            </svg>
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator
+    #paginator
+    [length]="dataSource.data.length"
+    [pageIndex]="0"
+    [pageSize]="5"
+    [pageSizeOptions]="[5, 10, 20]"
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</div>
+
+<div class="modal" tabindex="-1" id="remarks-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Remarks before rejection</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          #remarksmodalclose
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form action="">
+          <div class="mb-2">
+            <label for="exampleInputEmail1">Remarks</label>
+
+            <textarea
+              class="form-control"
+              [(ngModel)]="remarks"
+              name="remarks"
+              id="exampleFormControlTextarea1"
+              rows="3"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn custom-btn"
+          (click)="deleteRequest(selectedRow)"
+        >
+          Reject
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  [ngClass]="
+    rightSideBarIsClosed ? 'request-description close' : 'request-description'
+  "
+>
+  <div class="card">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">Requester Name</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+          {{ individualData?.requesterName }}
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">File Requesting</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+          {{ individualData?.fileRequested }}
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">Campus</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">{{ individualData?.campus }}</div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">Status</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">{{ individualData?.status }}</div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">Date</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+          {{ individualData?.date | date : "medium" }}
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">Purpose</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+          <span>{{ individualData?.purpose }}</span>
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-3">
+          <h6 class="mb-0">Message</h6>
+        </div>
+        <div class="col-sm-9 text-secondary">
+          <span class="text-capitalize">{{ individualData?.message }}</span>
+        </div>
+      </div>
+      <hr />
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="buttons">
+            <button
+              class="btn"
+              style="background-color: var(--bs-secondary); color: white"
+              mat-raised-button
+              (click)="closeRightSideBar()"
+            >
+              Close
+            </button>
+            <button
+              class="btn custom-btn"
+              mat-raised-button
+              (click)="addAccess(individualData.fileId, individualData)"
+            >
+              Approve
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

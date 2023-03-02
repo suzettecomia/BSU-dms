@@ -1,0 +1,45 @@
+<nav class="navbar bg-light fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/user-dashboard">
+      <img
+        src="assets/logobsu3.png"
+        height="56px"
+        alt="Logo"
+        class="d-inline-block align-text-center"
+      />
+      <span style="margin-left: 10px" *ngIf="!isCollapsed"
+        >BATANGAS STATE UNIVERSITY</span
+      >
+    </a>
+    <ul class="nav">
+      <li class="nav-item dropdown text-black">
+        <a
+          class="nav-link dropdown-toggle text-black"
+          href="#"
+          role="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          style="display: flex; align-items: center"
+        >
+          <img
+            [src]="image ? image : 'assets/empty-user.jpg'"
+            class="display-picture"
+            width="24"
+            height="24"
+            alt="image"
+          />
+
+          <span *ngIf="!isCollapsed">{{ headerName }}</span>
+        </a>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="/user-dashboard/user-profile"
+              >Profile</a
+            >
+          </li>
+          <li><a class="dropdown-item" (click)="signOut()">Logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>

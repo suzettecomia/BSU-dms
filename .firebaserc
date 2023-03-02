@@ -1,0 +1,15 @@
+{
+  "targets": {
+    
+    "bsu-documentmanagementsystem": {
+      "hosting": {
+        "frontend": [
+          "bsu-documentmanagementsystem"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "bsu-documentmanagementsystem"
+  }
+}
